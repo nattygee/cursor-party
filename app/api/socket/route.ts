@@ -1,12 +1,18 @@
 import { Server } from "socket.io"
 import type { NextRequest } from "next/server"
 
+declare module "http" {
+  interface Server {
+    io?: Server
+  }
+}
+
 // Store cursor positions by room
 const cursors: Record<string, Record<string, any>> = {}
 
 export function GET(req: NextRequest) {
   if (!req.socket.server.io) {
-    const io = new Server(req.socket.server, {
+    const io = new Server(req.socket.server as any, {
       path: "/api/socket",
       addTrailingSlash: false,
     })
