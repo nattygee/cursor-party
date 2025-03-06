@@ -1,23 +1,18 @@
-import { Server } from "socket.io"
+import { Server as SocketIOServer } from "socket.io"
 import type { NextRequest } from "next/server"
 
-declare module "http" {
-  interface Server {
-    io?: Server
-  }
-}
+let io: SocketIOServer
 
 // Store cursor positions by room
 const cursors: Record<string, Record<string, any>> = {}
 
-export function GET(req: NextRequest) {
-  if (!req.socket.server.io) {
-    const io = new Server(req.socket.server as any, {
+export async function GET(req: NextRequest) {
+  if (!io) {
+    // @ts-ignore
+    io = new SocketIOServer(req.socket.server, {
       path: "/api/socket",
       addTrailingSlash: false,
     })
-
-    req.socket.server.io = io
 
     io.on("connection", (socket) => {
       const roomId = socket.handshake.query.roomId as string
