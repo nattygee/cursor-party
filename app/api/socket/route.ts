@@ -8,7 +8,7 @@ const cursors: Record<string, Record<string, any>> = {}
 
 export async function GET(req: NextRequest) {
   if (!io) {
-    // @ts-ignore
+    // @ts-expect-error - The types don't match perfectly, but this works
     io = new SocketIOServer(req.socket.server, {
       path: "/api/socket",
       addTrailingSlash: false,
